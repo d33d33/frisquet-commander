@@ -16,6 +16,7 @@ use crate::frisquet::proto::FrisquetData;
 use crate::rf::RFClient;
 
 pub mod rf;
+pub mod dump;
 
 pub mod frisquet;
 fn main() {
@@ -47,8 +48,8 @@ fn main() {
             frisquet::parse_data_from_str(hex::encode(msg.clone()).as_str()).unwrap();
         // publish(&cli, &Listen {});
         //
-        // println!("{x:?}");
-        println!("Received: {metadata:?} data: {x:?}");
+        dump::print_frisquet(metadata, x);
+        // println!("Received: {metadata:?} data: {x:?}");
         // if (metadata.length == 8 && metadata.to_addr == 32) {
         //     println!("Send announce message");
         //     sendData(&cli, 32, 128, metadata.request_id, metadata.req_or_answer + 0x80, metadata.msg_type, SondePayload::SondeAssociationAnnounceMessage { data: vec![] });

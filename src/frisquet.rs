@@ -5,9 +5,9 @@ use crate::frisquet::proto::common::unhexify;
 use crate::frisquet::proto::satellite::SatellitePayload;
 use crate::frisquet::proto::sonde::SondePayload;
 use crate::frisquet::proto::{FrisquetData, FrisquetMetadata};
+use crate::frisquet::proto::connect::ConnectPayload;
 
 pub mod proto;
-
 
 pub fn parse_data_from_str(
     input: &str,
@@ -25,15 +25,19 @@ pub fn parse_data_from_str(
         32 => {
             let (_, payload) = SondePayload::read(rest, metadata.length)?;
             Ok((metadata, FrisquetData::Sonde(payload)))
-
         }
         // Chaudiere
         0x80 => {
             let (_, payload) = ChaudierePayload::read(rest, metadata.length)?;
             Ok((metadata, FrisquetData::Chaudiere(payload)))
         }
-        _ =>
-            panic!("Unknown")
+        // Connect
+        0x7E => {
+            let (_, payload) = ConnectPayload::read(rest, metadata.length)?;
+            Ok((metadata, FrisquetData::Connect(payload)))
+        }
+        _ => {
+            panic!("unknown addr 0x{:02x}", metadata.from_addr)
+        }
     }
 }
-

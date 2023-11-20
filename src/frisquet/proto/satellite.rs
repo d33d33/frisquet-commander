@@ -1,7 +1,7 @@
 use deku::prelude::*;
 
 #[derive(Debug, PartialEq, DekuRead, DekuWrite)]
-#[deku(ctx = "length: u8", id = "length")]
+#[deku(ctx = "length: u8", id = "length", endian = "big")]
 pub enum SatellitePayload {
     #[deku(id = "17")]
     SatelliteInitMessage {
@@ -15,10 +15,7 @@ pub enum SatellitePayload {
     },
 
     #[deku(id = "10")]
-    SatelliteAssocationAnnounceMessage {
-        unknown: u8,
-        version: [u8; 3],
-    },
+    SatelliteAssocationAnnounceMessage { unknown: u8, version: [u8; 3] },
 
     #[deku(id = "23")]
     SatelliteSetTemperatureMessage {
@@ -26,20 +23,36 @@ pub enum SatellitePayload {
         unknown1: u8,
         static_part_end: [u8; 3],
         unknown2: u8,
-        message_static_part: [u8; 2],
+        message_static_part: u8,
         temperature: i16,
         consigne: i16,
-        #[deku(bits = "3")]
+        unknown3: u8,
+        #[deku(bits = "1")]
         unknown_mode1: u8,
+        #[deku(bits = "1")]
+        boost: bool,
+        #[deku(bits = "1")]
+        unknown_mode2: u8,
         #[deku(bits = "1")]
         hors_gel: bool,
         #[deku(bits = "2")]
-        unknown_mode2: u8,
+        unknown_mode3: u8,
         #[deku(bits = "1")]
         derogation: bool,
         #[deku(bits = "1")]
-        soleil: bool,
+        soleil: bool, // confort
         signature: [u8; 2],
+    },
+    #[deku(id = "63")]
+    SatelliteProgMessage {
+        unknown1: [u8; 15],
+        sunday: [u8; 6],
+        monday: [u8; 6],
+        tuesday: [u8; 6],
+        wednesday: [u8; 6],
+        thursday: [u8; 6],
+        friday: [u8; 6],
+        saturday: [u8; 6],
     },
     #[deku(id_pat = "_")]
     SatelliteUnknowMessage {
